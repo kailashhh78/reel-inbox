@@ -124,6 +124,28 @@ Press **⌘R**.
 
 ---
 
+## 4b. No Mac? Cloud build + sideload from Windows
+
+Every push to GitHub runs `.github/workflows/build.yml` on a GitHub-hosted Mac. It:
+1. runs the link-parser checks (`CI/ParserChecks`)
+2. compiles the app and the Share Extension for iOS devices, unsigned
+3. checks the extension is embedded
+4. uploads **`ReelInbox-unsigned-ipa`** as a downloadable file (an "artifact")
+
+The bundle IDs in this repo are already set to `com.reelinboxq4hn4.reelinbox`, with App Group `group.com.reelinboxq4hn4.reelinbox`.
+
+To install it on the iPhone from Windows:
+1. Open the latest run under the repo's **Actions** tab, then download **ReelInbox-unsigned-ipa**. You must be signed in to GitHub. It downloads as a .zip containing the .ipa.
+2. Install a Windows sideloading tool yourself, such as Sideloadly (from its official site). Sign in with your own Apple ID inside that tool. It signs the app with your free Apple account and installs it over USB.
+3. On the iPhone, turn on **Settings → Privacy & Security → Developer Mode**. Then trust your Apple ID under **Settings → General → VPN & Device Management**.
+4. The same free-account limits apply: re-install every 7 days.
+
+**Not verified:** whether a given sideloading tool keeps the App Group working. Some tools rename App Group IDs when they re-sign. Check **Settings → Share Extension → App Group** in the app:
+- If it shows **Working**, sharing from Instagram works.
+- If not, use **Copy link** in Instagram and **+ → Paste** in Reel Inbox. That path needs no App Group.
+
+---
+
 ## 5. Daily use
 
 1. A friend sends you a reel in Instagram DMs.
