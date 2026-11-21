@@ -37,7 +37,7 @@ struct InboxView: View {
                     }
                 }
             }
-            .navigationTitle("Inbox")
+            .navigationTitle("Shared Reels")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {

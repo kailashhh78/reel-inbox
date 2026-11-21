@@ -36,8 +36,11 @@ struct HowToShareView: View {
 struct LimitationsView: View {
     var body: some View {
         List {
-            Section("Instagram DMs can't be read automatically") {
-                Text("Instagram has no public API that lets an app read a personal account's direct messages. Meta shut down the Instagram Basic Display API on December 4, 2024, and its messaging APIs are only for business and creator accounts. That's why you share reels into this app yourself.")
+            Section("How Messages works") {
+                Text("Instagram has no public API for a personal account's DMs. Meta shut down the Instagram Basic Display API on December 4, 2024. So the Messages tab shows Instagram's own website (instagram.com), limited to your chats. Reel Inbox blocks every other page, and hides the Home, Reels, Explore and Search buttons. If Instagram changes its website, an icon may reappear, but the pages behind it stay blocked.")
+            }
+            Section("Messages limits") {
+                Text("No push notifications for new DMs: web pages can't send them to this app. Keep the Instagram app installed only for notifications, and limit it with Screen Time. Some features of the Instagram app may be missing on the website. Instagram may sometimes ask you to verify your login.")
             }
             Section("The Instagram app still has its feed") {
                 Text("When a reel opens in the official Instagram app, Instagram controls that screen. Its viewer may let you swipe up to more recommended reels, and no other app can turn that off. To avoid it, pick \"Focused player\" in Settings, which shows only the one reel. Or swipe back to Reel Inbox right away using the \"◀ Reel Inbox\" button iOS shows in the top-left corner.")
@@ -51,8 +54,11 @@ struct LimitationsView: View {
             Section("No automatic previews by default") {
                 Text("Link previews are off by default so the app doesn't contact Instagram in the background. When they're on, previews only work for public posts.")
             }
+            Section("Block the real Instagram app") {
+                Text("This app can't change the Instagram app itself. To keep its Reels tab out of reach: Settings > Screen Time > App Limits > Add Limit > Instagram, 1 minute a day, with Block at End of Limit on. Then have someone else set your Screen Time passcode.")
+            }
             Section("What this app never does") {
-                Text("No Instagram login or password, no scraping, no private APIs, no feed, no autoplay, no recommendations, no notifications, no streaks.")
+                Text("Never sees or stores your Instagram password: you log in on Instagram's own page. No scraping, no private APIs, no feed, no autoplay, no recommendations, no notifications, no streaks.")
             }
         }
         .navigationTitle("Limitations")

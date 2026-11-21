@@ -7,12 +7,19 @@ struct SafariItem: Identifiable {
     let url: URL
 }
 
+/// A reel or post tapped inside Messages, shown in the locked single-reel viewer.
+struct MediaPresentation: Identifiable {
+    let id = UUID()
+    let link: InstagramLink
+}
+
 /// Decides how the Watch button opens a reel, and holds app-wide presentation state.
 @MainActor
 @Observable
 final class WatchRouter {
     var playerReel: Reel?
     var safariItem: SafariItem?
+    var messagesMedia: MediaPresentation?
     var alertMessage: String?
     /// Last error from importing Share Extension links (shown as a banner in the Inbox).
     var importErrorMessage: String?

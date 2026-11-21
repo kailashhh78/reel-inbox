@@ -5,6 +5,8 @@ struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.scenePhase) private var scenePhase
     @Environment(WatchRouter.self) private var router
+    @Environment(InstagramWebSession.self) private var instagram
+    @State private var isConfirmingLogout = false
 
     @AppStorage(SettingsKey.openMode) private var openMode: OpenMode = .instagramApp
     @AppStorage(SettingsKey.markWatchedOnOpen) private var markWatchedOnOpen = true
@@ -21,22 +23,32 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 Section {
+                    Button("Log Out of Instagram…", role: .destructive) {
+                        isConfirmingLogout = true
+                    }
+                } header: {
+                    Text("Messages")
+                } footer: {
+                    Text("Messages shows Instagram's official website, limited to your chats. You log in on Instagram's own page; Reel Inbox never reads or stores your password. The feed, Reels, Explore, Stories and profiles are blocked, and a reel tapped in a chat opens alone. Swiping to the next one is blocked.")
+                }
+
+                Section {
                     Picker("Open reels in", selection: $openMode) {
                         ForEach(OpenMode.allCases) { mode in
                             Text(mode.title).tag(mode)
                         }
                     }
                 } header: {
-                    Text("Watching")
+                    Text("Shared reels")
                 } footer: {
                     Text(openMode.explanation)
                 }
 
                 Section {
                     Toggle("Mark as watched when opened", isOn: $markWatchedOnOpen)
-                    Toggle("Return to Inbox when I come back", isOn: $returnToInbox)
+                    Toggle("Return to Shared when I come back", isOn: $returnToInbox)
                 } footer: {
-                    Text("When you come back from Instagram, Reel Inbox opens on your Inbox instead of the last tab you used.")
+                    Text("When you come back from the Instagram app, Reel Inbox opens on your Shared list instead of the last tab you used. Messages is left as it was.")
                 }
 
                 Section {
@@ -87,6 +99,16 @@ struct SettingsView: View {
             .task { refreshDiagnostics() }
             .onChange(of: scenePhase) { _, newPhase in
                 if newPhase == .active { refreshDiagnostics() }
+            }
+            .confirmationDialog(
+                "Log out of Instagram?",
+                isPresented: $isConfirmingLogout,
+                titleVisibility: .visible
+            ) {
+                Button("Log Out", role: .destructive) { instagram.logOut() }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("Removes Instagram's login cookies and website data from this app. Your saved links stay.")
             }
             .confirmationDialog(
                 "Erase all data?",

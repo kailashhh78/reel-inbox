@@ -44,6 +44,18 @@ enum ReelRepository {
         return .inserted
     }
 
+    /// Records a reel opened from Messages in the Watched history.
+    static func recordWatchedFromMessages(_ link: InstagramLink, in context: ModelContext) throws {
+        try upsert(link: link, sender: "", note: "", date: .now, in: context)
+        let key = link.canonicalURL.absoluteString
+        var descriptor = FetchDescriptor<Reel>(predicate: #Predicate<Reel> { $0.canonicalURL == key })
+        descriptor.fetchLimit = 1
+        if let reel = try context.fetch(descriptor).first, !reel.isWatched {
+            reel.setWatched(true)
+        }
+        try context.save()
+    }
+
     static func delete(_ reel: Reel, in context: ModelContext) throws {
         context.delete(reel)
         try context.save()

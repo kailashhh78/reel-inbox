@@ -10,6 +10,16 @@ Instagram ──Share──▶ Share Extension ──JSON file in App Group─�
 
 Swift, SwiftUI and SwiftData. iOS 18+, iPhone only, portrait. No backend, no account, no analytics, no third-party code.
 
+### Messages tab (DMs only)
+The **Messages** tab is the home screen. It shows Instagram's official website (`instagram.com/direct/inbox/`) in a locked-down `WKWebView`:
+- **Login:** you log in on Instagram's own page. The app never reads or stores your password, and cookies stay in the app's on-device web storage. **Settings → Log Out of Instagram** clears them.
+- **Only DMs and login pages load.** The feed, Reels, Explore, Stories and profiles are blocked twice: by native navigation rules, and by an injected script that catches in-page route changes and taps. The Home, Reels, Explore and Search buttons are hidden with CSS.
+- **Single reels only.** Tapping a reel or post in a chat opens it in a full-screen viewer locked to that one reel. Any move to another reel is reverted. **Done** returns to the chat. The reel is also added to **Watched**.
+- **No autoplay:** videos play only when tapped.
+- **No DM push notifications.** Websites can't send them to the app. Keep the Instagram app for notifications only, limited by Screen Time (see the in-app Limitations page).
+
+Code: `ReelInbox/Messages/` (`InstagramWeb.swift` holds the rules and the guard script).
+
 ---
 
 ## 1. What is and isn't possible (research summary)
