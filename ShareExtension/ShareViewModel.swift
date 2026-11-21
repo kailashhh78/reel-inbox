@@ -7,7 +7,8 @@ final class ShareViewModel: ObservableObject {
         case loading
         case ready(InstagramLink)
         case invalid
-        case saved
+        /// `viaClipboard`: no App Group was available, so the link went through the clipboard.
+        case saved(viaClipboard: Bool)
         case failed(String)
     }
 
@@ -48,11 +49,19 @@ final class ShareViewModel: ObservableObject {
             sharedAt: Date()
         )
         do {
-            try PendingShareStore.enqueue(share)
-            phase = .saved
+            let viaClipboard: Bool
+            if AppGroup.containerURL != nil {
+                try PendingShareStore.enqueue(share)
+                viaClipboard = false
+            } else {
+                try PasteboardHandoff.write(share)
+                viaClipboard = true
+            }
+            phase = .saved(viaClipboard: viaClipboard)
             // Brief confirmation, then close the sheet and return to Instagram.
+            let delay: UInt64 = viaClipboard ? 2_500_000_000 : 700_000_000
             Task {
-                try? await Task.sleep(nanoseconds: 700_000_000)
+                try? await Task.sleep(nanoseconds: delay)
                 complete()
             }
         } catch {

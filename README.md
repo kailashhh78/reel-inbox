@@ -140,9 +140,11 @@ To install it on the iPhone from Windows:
 3. On the iPhone, turn on **Settings → Privacy & Security → Developer Mode**. Then trust your Apple ID under **Settings → General → VPN & Device Management**.
 4. The same free-account limits apply: re-install every 7 days.
 
-**Not verified:** whether a given sideloading tool keeps the App Group working. Some tools rename App Group IDs when they re-sign. Check **Settings → Share Extension → App Group** in the app:
-- If it shows **Working**, sharing from Instagram works.
-- If not, use **Copy link** in Instagram and **+ → Paste** in Reel Inbox. That path needs no App Group.
+**App Groups and sideloading:** the first Sideloadly install with a free Apple ID reported the App Group as *Not configured*. The app now handles this itself:
+1. **Auto-detect.** At runtime the app and extension try the configured group, then any `ALTAppGroups` in Info.plist, then the groups in the app's `embedded.mobileprovision`. They use the first one iOS grants.
+2. **Clipboard fallback.** If no group is available, the Share Extension puts the link (plus a private marker) on the clipboard. Reel Inbox imports it the next time it becomes active. iOS may ask **Allow Paste**. To stop that, set iOS **Settings → Apps → Reel Inbox → Paste from Other Apps → Allow**. Open Reel Inbox right after sharing, before copying anything else.
+
+**Settings → Share Extension → App Group** shows **Working** (App Group in use) or **Using clipboard** (fallback).
 
 ---
 

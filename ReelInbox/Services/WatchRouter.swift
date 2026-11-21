@@ -67,11 +67,6 @@ final class WatchRouter {
     }
 
     func runImport(_ context: ModelContext) {
-        do {
-            _ = try ShareImporter.importPending(into: context)
-            importErrorMessage = nil
-        } catch {
-            importErrorMessage = error.localizedDescription
-        }
+        importErrorMessage = ShareImporter.importAll(into: context)
     }
 }

@@ -61,12 +61,20 @@ struct ShareView: View {
                     .buttonStyle(.bordered)
             }
 
-        case .saved:
-            ContentUnavailableView(
-                "Saved to Inbox",
-                systemImage: "checkmark.circle",
-                description: Text("Open Reel Inbox when you're ready to watch it.")
-            )
+        case .saved(let viaClipboard):
+            if viaClipboard {
+                ContentUnavailableView(
+                    "Almost saved",
+                    systemImage: "doc.on.clipboard",
+                    description: Text("Open Reel Inbox next to add it to your Inbox, and tap Allow Paste if asked. Don't copy anything else first.")
+                )
+            } else {
+                ContentUnavailableView(
+                    "Saved to Inbox",
+                    systemImage: "checkmark.circle",
+                    description: Text("Open Reel Inbox when you're ready to watch it.")
+                )
+            }
 
         case .failed(let message):
             ContentUnavailableView {

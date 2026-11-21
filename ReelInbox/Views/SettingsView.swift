@@ -67,7 +67,7 @@ struct SettingsView: View {
                 } header: {
                     Text("Share Extension")
                 } footer: {
-                    Text("Links you share from Instagram wait in a shared folder on this iPhone until Reel Inbox opens. App Group ID: \(AppGroup.identifier)")
+                    Text(shareExtensionFooter)
                 }
 
                 Section("Help") {
@@ -109,10 +109,23 @@ struct SettingsView: View {
         case .ok:
             Label("Working", systemImage: "checkmark.circle.fill")
                 .foregroundStyle(.green)
+        case .clipboardFallback:
+            Label("Using clipboard", systemImage: "doc.on.clipboard")
+                .foregroundStyle(.orange)
         case .failed(let reason):
             Label(reason, systemImage: "xmark.octagon.fill")
                 .foregroundStyle(.red)
                 .multilineTextAlignment(.trailing)
+        }
+    }
+
+    private var shareExtensionFooter: String {
+        switch groupStatus {
+        case .clipboardFallback:
+            return "This copy of the app was signed without an App Group (common when sideloading with a free Apple ID). Sharing still works: the extension passes the link through the clipboard, and Reel Inbox picks it up when you open it. Open Reel Inbox right after sharing, and tap Allow Paste if asked. To skip that prompt, go to iOS Settings > Apps > Reel Inbox > Paste from Other Apps > Allow."
+        default:
+            let renamed = AppGroup.isRenamed ? " (renamed by the signing tool; configured: \(AppGroup.configuredIdentifier))" : ""
+            return "Links you share from Instagram wait in a shared folder on this iPhone until Reel Inbox opens. App Group: \(AppGroup.identifier)\(renamed)"
         }
     }
 
@@ -124,7 +137,9 @@ struct SettingsView: View {
     private func eraseAll() {
         do {
             try ReelRepository.deleteAll(matching: nil, in: modelContext)
-            try PendingShareStore.removeAll()
+            if AppGroup.containerURL != nil {
+                try PendingShareStore.removeAll()
+            }
         } catch {
             router.alertMessage = "Couldn't erase everything: \(error.localizedDescription)"
         }
@@ -136,13 +151,14 @@ enum AppGroupDiagnostics {
     enum Status: Equatable {
         case checking
         case ok
+        case clipboardFallback
         case failed(String)
     }
 
     /// Writes and removes a probe file in the shared container to prove it's usable.
     static func check() -> Status {
         guard let container = AppGroup.containerURL else {
-            return .failed("Not configured")
+            return .clipboardFallback
         }
         let probe = container.appendingPathComponent(".probe-\(UUID().uuidString)")
         do {

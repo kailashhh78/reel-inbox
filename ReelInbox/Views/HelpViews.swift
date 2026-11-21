@@ -42,6 +42,9 @@ struct LimitationsView: View {
             Section("The Instagram app still has its feed") {
                 Text("When a reel opens in the official Instagram app, Instagram controls that screen. Its viewer may let you swipe up to more recommended reels, and no other app can turn that off. To avoid it, pick \"Focused player\" in Settings, which shows only the one reel. Or swipe back to Reel Inbox right away using the \"◀ Reel Inbox\" button iOS shows in the top-left corner.")
             }
+            Section("Sideloaded copies") {
+                Text("If this app was installed with a sideloading tool and a free Apple ID, the App Group may be missing. Sharing then goes through the clipboard: open Reel Inbox right after sharing, before copying anything else.")
+            }
             Section("Focused player limits") {
                 Text("The focused player uses Instagram's official embed. Private accounts, age-restricted posts, and accounts that turned off embedding can't be shown there. Instagram may also show a \"View on Instagram\" card instead of playing the video. Use Open in Instagram for those reels.")
             }
