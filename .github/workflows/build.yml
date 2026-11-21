@@ -1,0 +1,64 @@
+# Compiles Reel Inbox on a GitHub-hosted Mac (no signing), runs the link-parser
+# checks, and uploads an UNSIGNED .ipa for sideloading tools that re-sign it.
+name: Build
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show toolchain
+        run: |
+          xcodebuild -version
+          swift --version
+          xcodebuild -list -project ReelInbox.xcodeproj
+
+      - name: Link parser checks
+        run: |
+          swiftc Shared/InstagramLink.swift CI/ParserChecks/main.swift -o parser-checks
+          ./parser-checks
+
+      - name: Build app + Share Extension (iOS device, unsigned)
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project ReelInbox.xcodeproj \
+            -target ReelInbox \
+            -configuration Release \
+            -sdk iphoneos \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            SYMROOT="$PWD/build" \
+            | tee xcodebuild.log
+
+      - name: Verify bundle contents
+        run: |
+          APP="build/Release-iphoneos/ReelInbox.app"
+          test -d "$APP"
+          test -d "$APP/PlugIns/ShareExtension.appex"
+          plutil -p "$APP/Info.plist" | grep -E "CFBundleIdentifier|CFBundleDisplayName|MinimumOSVersion"
+          plutil -p "$APP/PlugIns/ShareExtension.appex/Info.plist" | grep -E "CFBundleIdentifier|NSExtensionPointIdentifier|NSExtensionPrincipalClass"
+
+      - name: Package unsigned IPA
+        run: |
+          mkdir -p Payload
+          cp -R build/Release-iphoneos/ReelInbox.app Payload/
+          zip -qry ReelInbox-unsigned.ipa Payload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ReelInbox-unsigned-ipa
+          path: ReelInbox-unsigned.ipa
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: build-log
+          path: xcodebuild.log
